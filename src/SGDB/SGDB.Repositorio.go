@@ -76,7 +76,8 @@ func (repositorio RepRecInformacao) GetNovoCodigo(Atributo, nomeTabela, filtro s
 		if erro = linha.Scan(
 			&novoCodigo,
 		); erro != nil {
-			return -1, erro
+			// return -1, erro
+			return 1, nil
 		}
 	}
 
