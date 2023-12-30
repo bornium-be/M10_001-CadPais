@@ -417,3 +417,51 @@ func ibge_Buscar(w http.ResponseWriter, r *http.Request) {
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+func abc(w http.ResponseWriter, r *http.Request) {
+
+	//-----> "/bornium/v1/{EmpresaId}/cadPais.ibge/{IBGE_Id}",
+
+	//------------------------------------------------------------------
+
+	parametros := mux.Vars(r)
+
+	ibge_Id, erro := strconv.ParseInt(parametros["IBGE_Id"], 10, 64)
+
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	//----------------------------
+
+	erro = repositorio.RepositorioAbrir()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	defer repositorio.RepositorioFechar()
+
+	//----------------------------
+
+	registro, erro := repositorio.Abc(ibge_Id)  
+
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	var info declaracao.Resultado
+
+	if registro.PaisId > 0 {
+		info.Result = append(info.Result, registro)
+	}
+
+	respostas.JSON(w, http.StatusOK, info)
+}
+
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

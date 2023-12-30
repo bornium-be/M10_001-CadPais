@@ -55,4 +55,11 @@ var Rotas_CadPais = []declaracao.Rota{
 		Funcao:             ibge_Buscar,
 		RequerAutenticacao: false,
 	},
+
+	{
+		URI:                "/bornium/v1/{EmpresaId}/abc/{IBGE_Id}",
+		Metodo:             http.MethodGet,
+		Funcao:             abc,
+		RequerAutenticacao: false,
+	},
 }

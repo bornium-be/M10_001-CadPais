@@ -100,11 +100,18 @@ func ITF_ToInt32(info interface{}) int32 {
 func ITF_ToInt64(info interface{}) int64 {
 
 	if info != nil {
+
+		if reflect.ValueOf(info).Kind() == reflect.Uint8 {
+			return int64(info.(uint8))
+		}
+
 		if reflect.ValueOf(info).Kind() == reflect.Int32 {
 			return int64(info.(int32))
 		} else {
 			return info.(int64)
 		}
+
+		
 	} else {
 		return 0
 	}

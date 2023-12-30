@@ -10,9 +10,9 @@ import (
 
 func Conectar() (*sql.DB, error) {
 
-	db, erro := sql.Open("firebirdsql", configSistema.StrConexaoBanco_FB)
+//	db, erro := sql.Open("firebirdsql", configSistema.StrConexaoBanco_FB)
 
-	// db, erro := sql.Open("mysql", configSistema.StrConexaoBanco_MySQL)
+	db, erro := sql.Open("mysql", configSistema.StrConexaoBanco_MySQL)
 
 	if erro != nil {
 		return nil, erro

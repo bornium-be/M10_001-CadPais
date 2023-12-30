@@ -30,15 +30,15 @@ func (repositorio TCadPais_Repositorio) BuscarTodos(empresaId int64, paisNome st
 
 	paisNome = strings.ToUpper(paisNome)
 
-	strSQL := `  select TA.PaisId, 
-	                    TA.PaisIdEmp, 
+	strSQL := `  select TA.IdPais, 
+	                    TA.IdPaisEmp, 
 	                    TA.PaisNome 
 	               from PAIS TA
-				  Where TA.EmpresaId = ? 
+				  Where TA.IdEmpresa = ? 
 				    And UPPER(TA.PaisNome) LIKE ?
 			  ` //---> strSQL
 
-	strSQL = conversor.C001(strSQL)
+	 strSQL = conversor.C001(strSQL)
 
 	linhas, erro := repositorio.BD().Query(strSQL, empresaId, paisNome)
 
@@ -74,14 +74,14 @@ func (repositorTio TCadPais_Repositorio) BuscarPorId(codEmpresa, codPaisEmp int6
 
 	var conversor conversor.TConversor
 
-	strSQL := `select TA.EmpresaId, 
-	                  TA.PaisId, 
-					  TA.PaisIdEmp, 
+	strSQL := `select TA.IdEmpresa, 
+	                  TA.IdPais, 
+					  TA.IdPaisEmp, 
 					  TA.PaisNome, 
-					  TA.IBGE_Id
+					  TA.IdIBGE
 				 from PAIS TA
-				 Where TA.EmpresaId = ?
-				   And TA.PaisIdEmp = ?
+				 Where TA.IdEmpresa = ?
+				   And TA.IdPaisEmp = ?
 			  ` //--> Fim SQL
 
 	strSQL = conversor.C001(strSQL)
@@ -109,13 +109,13 @@ func (repositorTio TCadPais_Repositorio) BuscarPorId(codEmpresa, codPaisEmp int6
 
 		regPais = sqlPais.Converter()
 
-		regIBGE, erro := repositorio.BuscarIBGE(regPais.IBGE_Id)
+	//	regIBGE, erro := repositorio.BuscarIBGE(regPais.IBGE_Id)
 
-		regPais.InfoIBGE = regIBGE
+	//	regPais.InfoIBGE = regIBGE
 
-		if erro != nil {
-			return TReg_Pais{}, erro
-		}
+	//	if erro != nil {
+	//		return TReg_Pais{}, erro
+	//	}
 	}
 	return regPais, nil
 }
@@ -128,8 +128,8 @@ func (repositorTio TCadPais_Repositorio) InserirRegistro(codEmpresa, codPaisEmp 
 
 	var conversor conversor.TConversor
 
-	strSQL := `insert into PAIS(EmpresaId, PaisIdEmp, PaisNome, IBGE_Id) 
-	           values(?, ?, ?, ?)`
+	strSQL := `insert into PAIS(IdEmpresa, IdPais, IdPaisEmp, PaisNome, IdIBGE) 
+	           values(?, ?, ?, ?, ?)`
 
 	strSQL = conversor.C001(strSQL)
 
@@ -145,6 +145,7 @@ func (repositorTio TCadPais_Repositorio) InserirRegistro(codEmpresa, codPaisEmp 
 
 	_, erro = statement.Exec(
 		sqlPais.EmpresaId,
+		sqlPais.PaisIdEmp,
 		sqlPais.PaisIdEmp,
 		sqlPais.PaisNome,
 		sqlPais.IBGE_Id,
@@ -171,9 +172,9 @@ func (repositorTio TCadPais_Repositorio) AlterarRegistro(codEmpresa, CodPaisEmp 
 	var conversor conversor.TConversor
 
 	strSQL := `Update PAIS 
-	           set PaisNome=?, IBGE_Id=? 
-	    	   Where EmpresaId = ? 
-			     and PaisIdEmp  = ?`
+	           set PaisNome=?, idIBGE=? 
+	    	   Where IdEmpresa = ? 
+			     and IdPaisEmp  = ?`
 
 	strSQL = conversor.C001(strSQL)
 
@@ -213,8 +214,8 @@ func (repositorTio TCadPais_Repositorio) DeletarRegistro(codEmpresa, codPaisEmp 
 	var conversor conversor.TConversor
 
 	strSQL := `Delete from PAIS 
-	    	   Where EmpresaId = ?
-			     and PaisIdEmp = ?`
+	    	   Where IdEmpresa = ?
+			     and IdPaisEmp = ?`
 
 	strSQL = conversor.C001(strSQL)
 
@@ -242,10 +243,10 @@ func (repositorTio TCadPais_Repositorio) BuscarIBGE(IBGE_Id int64) (TReg_IBGE_Pa
 
 	var conversor conversor.TConversor
 
-	strSQL := `select PaisId, 
+	strSQL := `select IdPais, 
 	                  PaisNome 
 				 from IBGE_PAIS 
-   				Where PaisId = ?`
+   				Where IdPais = ?`
 
 	strSQL = conversor.C001(strSQL)
 
@@ -278,12 +279,12 @@ func (repositorTio TCadPais_Repositorio) CodNovoRegistro(codEmpresa int64) (decl
 
 	var registro declaracao.RegCodigo
 
-	filtro := fmt.Sprintf("EmpresaId = %d", codEmpresa)
+	filtro := fmt.Sprintf("IdEmpresa = %d", codEmpresa)
 
 	recInfo := sgdb.RecInformacao{}
 	recInfo.DB = repositorio.BD()
 
-	novoCodigo, erro := recInfo.CodNovoRegistro("PaisIdEmp", "PAIS", filtro)
+	novoCodigo, erro := recInfo.CodNovoRegistro("IdPaisEmp", "PAIS", filtro)
 
 	if erro != nil {
 		return declaracao.RegCodigo{}, erro
@@ -300,18 +301,55 @@ func (repositorTio TCadPais_Repositorio) CodNovoRegistro(codEmpresa int64) (decl
 
 func (repositorTio TCadPais_Repositorio) GetCodRegistro(codEmpresa, codPaisEmp int64) (int64, error) {
 
-	filtro := fmt.Sprintf("(EmpresaId = %d) and (PaisIdEmp = %d)", codEmpresa, codPaisEmp)
+	filtro := fmt.Sprintf("(IdEmpresa = %d) and (IdPaisEmp = %d)", codEmpresa, codPaisEmp)
 
 	recInfo := sgdb.RecInformacao{}
 	recInfo.DB = repositorio.BD()
 
-	codigo, erro := recInfo.RecInfo_Int("PaisId", "PAIS", filtro)
+	codigo, erro := recInfo.RecInfo_Int("IdPais", "PAIS", filtro)
 	if erro != nil {
 		return -1, erro
 	}
 
 	return codigo, nil
 
+}
+
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+func (repositorTio TCadPais_Repositorio) Abc(IBGE_Id int64) (TReg_IBGE_Pais, error) {
+
+	var conversor conversor.TConversor
+
+	strSQL := `select IdPais, 
+	                  PaisNome 
+				 from PAIS 
+   				Where IdPais = ?`
+
+	strSQL = conversor.C001(strSQL)
+
+	linhas, erro := repositorio.BD().Query(strSQL, IBGE_Id)
+
+	if erro != nil {
+		return TReg_IBGE_Pais{}, erro
+	}
+	defer linhas.Close()
+
+	var sql_IBGE TSQL_RegIBGE_Pais
+
+	if linhas.Next() {
+		if erro = linhas.Scan(
+			&sql_IBGE.PaisId,
+			&sql_IBGE.PaisNome,
+		); erro != nil {
+			return TReg_IBGE_Pais{}, erro
+		}
+	}
+
+	return sql_IBGE.Converte(), nil
 }
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

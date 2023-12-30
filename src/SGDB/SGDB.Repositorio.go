@@ -3,7 +3,7 @@ package sgdb
 import (
 	"database/sql"
 
-	util "github.com/bornium-be/M10_001-CadPais/src/Util"
+	//util "github.com/bornium-be/M10_001-CadPais/src/Util"
 )
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -68,7 +68,9 @@ func (repositorio RepRecInformacao) GetNovoCodigo(Atributo, nomeTabela, filtro s
 
 	//Etapa 02
 
-	var novoCodigo interface{}
+	//var novoCodigo interface{}
+
+	var novoCodigo int64
 
 	if linha.Next() {
 		if erro = linha.Scan(
@@ -78,7 +80,9 @@ func (repositorio RepRecInformacao) GetNovoCodigo(Atributo, nomeTabela, filtro s
 		}
 	}
 
-	return util.ITF_ToInt64(novoCodigo) + 1, nil
+	//return util.ITF_ToInt64(novoCodigo) + 1, nil
+
+	return novoCodigo + 1, nil
 
 }
 
