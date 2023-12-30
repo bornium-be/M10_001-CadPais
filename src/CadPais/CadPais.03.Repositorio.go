@@ -33,7 +33,7 @@ func (repositorio TCadPais_Repositorio) BuscarTodos(empresaId int64, paisNome st
 	strSQL := `  select TA.IdPais, 
 	                    TA.IdPaisEmp, 
 	                    TA.PaisNome 
-	               from PAIS TA
+	               from pais TA
 				  Where TA.IdEmpresa = ? 
 				    And UPPER(TA.PaisNome) LIKE ?
 			  ` //---> strSQL
@@ -79,7 +79,7 @@ func (repositorTio TCadPais_Repositorio) BuscarPorId(codEmpresa, codPaisEmp int6
 					  TA.IdPaisEmp, 
 					  TA.PaisNome, 
 					  TA.IdIBGE
-				 from PAIS TA
+				 from pais TA
 				 Where TA.IdEmpresa = ?
 				   And TA.IdPaisEmp = ?
 			  ` //--> Fim SQL
@@ -128,7 +128,7 @@ func (repositorTio TCadPais_Repositorio) InserirRegistro(codEmpresa, codPaisEmp 
 
 	var conversor conversor.TConversor
 
-	strSQL := `insert into PAIS(IdEmpresa, IdPais, IdPaisEmp, PaisNome, IdIBGE) 
+	strSQL := `insert into pais(IdEmpresa, IdPais, IdPaisEmp, PaisNome, IdIBGE) 
 	           values(?, ?, ?, ?, ?)`
 
 	strSQL = conversor.C001(strSQL)
@@ -171,7 +171,7 @@ func (repositorTio TCadPais_Repositorio) AlterarRegistro(codEmpresa, CodPaisEmp 
 
 	var conversor conversor.TConversor
 
-	strSQL := `Update PAIS 
+	strSQL := `Update pais 
 	           set PaisNome=?, idIBGE=? 
 	    	   Where IdEmpresa = ? 
 			     and IdPaisEmp  = ?`
@@ -213,7 +213,7 @@ func (repositorTio TCadPais_Repositorio) DeletarRegistro(codEmpresa, codPaisEmp 
 
 	var conversor conversor.TConversor
 
-	strSQL := `Delete from PAIS 
+	strSQL := `Delete from pais 
 	    	   Where IdEmpresa = ?
 			     and IdPaisEmp = ?`
 
@@ -284,7 +284,7 @@ func (repositorTio TCadPais_Repositorio) CodNovoRegistro(codEmpresa int64) (decl
 	recInfo := sgdb.RecInformacao{}
 	recInfo.DB = repositorio.BD()
 
-	novoCodigo, erro := recInfo.CodNovoRegistro("IdPaisEmp", "PAIS", filtro)
+	novoCodigo, erro := recInfo.CodNovoRegistro("IdPaisEmp", "pais", filtro)
 
 	if erro != nil {
 		return declaracao.RegCodigo{}, erro
@@ -306,7 +306,7 @@ func (repositorTio TCadPais_Repositorio) GetCodRegistro(codEmpresa, codPaisEmp i
 	recInfo := sgdb.RecInformacao{}
 	recInfo.DB = repositorio.BD()
 
-	codigo, erro := recInfo.RecInfo_Int("IdPais", "PAIS", filtro)
+	codigo, erro := recInfo.RecInfo_Int("IdPais", "pais", filtro)
 	if erro != nil {
 		return -1, erro
 	}
@@ -326,7 +326,7 @@ func (repositorTio TCadPais_Repositorio) Abc(IBGE_Id int64) (TReg_IBGE_Pais, err
 
 	strSQL := `select IdPais, 
 	                  PaisNome 
-				 from PAIS 
+				 from pais 
    				Where IdPais = ?`
 
 	strSQL = conversor.C001(strSQL)
