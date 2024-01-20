@@ -17,6 +17,10 @@ type Registro struct {
 	AtributoLog   []CampoInfo `json:"atributoLog,omitempty" bson:"atributoLog,omitempty"`
 }
 
+
+
+
+
 type CampoInfo struct {
 	CodItem  string `json:"codItem,omitempty" bson:"codItem,omitempty"`
 	Atributo string `json:"atributo,omitempty" bson:"atributo,omitempty"`
